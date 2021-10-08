@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Персонал{% endblock %}
+{% block content %}
+    {% verbatim %}
+    <main id="staff" class="container-xxl mt-3 shadow-lg p-3 mb-5 bg-white rounded">
+        <div class="col-md-8" v-for="(i, id) in ordersSort()" style="transition: 1s" :id="i.id">
+            <div class="card mb-3">
+                <div class="alert" role="alert" style="margin-bottom: 0!important;" :class="bg(i.status)">
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" :id="'heading' + id">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        :data-bs-target="'#collapse' + id" aria-expanded="true"
+                                        :aria-controls="'collapse' + id">
+                                    Корзина
+                                </button>
+                            </h2>
+                            <div :id="'collapse' + id" class="accordion-collapse collapse"
+                                 :aria-labelledby="'heading' + id"
+                                 data-bs-parent="#accordionExample">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Наименование</th>
+                                        <th scope="col">Кол-во</th>
+                                        <th scope="col">Стоимость</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="j in i.products">
+                                        <td v-if="j.is_custom">{{ j.description }}</td>
+                                        <td v-else>{{ j.product }}</td>
+                                        <td>{{ j.qty }}</td>
+                                        <td>{{ j.final_price }}руб.</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <p>Заказчик: {{ i.customer }}</p>
+                    <p>Статус:
+                        <select class="form-select d-inline w-auto" :class="bg(i.status, true)"
+                                @click="changeStatus($event.target.value, i.id, i.status)">
+                            <option v-for="st in status" :selected="st === i.status" :value="st">{{ st }}</option>
+                        </select>
+                    </p>
+                    <p>Дата создания: {{ i.created_at }}</p>
+                    <p>Дата обновления: {{ i.updated_at }}</p>
+                    <p>Общая стоимость: {{ i.final_price }}руб.</p>
+                    <p>Способ доставки: {{ i.type_delivery }}</p>
+                    <p v-if="i.comment">Комментарий: <strong>{{ i.comment }}</strong></p>
+                </div>
+            </div>
+        </div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li>
+                    <button type="button" class="btn btn-primary" @click="page = 0" id="start" :disabled="page === 0">
+                        В начало
+                    </button>
+                </li>
+                <li>
+                    <button type="button" class="btn btn-primary" @click="page--" :disabled="page === 0" id="previous">
+                        Назад
+                    </button>
+                </li>
+                <li>
+                    <button class="btn btn-primary">
+                        {{ page + 1 }}
+                    </button>
+                </li>
+                <li>
+                    <button type="button" class="btn btn-primary" @click="page++" :disabled="page === pages-1"
+                            id="next">
+                        Вперёд
+                    </button>
+                </li>
+                <li>
+                    <button type="button" class="btn btn-primary" @click="page = pages-1" id="end"
+                            :disabled="page === pages-1">
+                        В конец
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </main>
+    {% endverbatim %}
+    <script>
+        const chatSocket = new WebSocket('ws://localhost:8000/order/');
+
+        chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            console.log(data.message);
+            staff.orders = data.message;
+        };
+        chatSocket.onclose = function (e) {
+            location.reload();
+
+        };
+    </script>
+{% endblock content %}

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Акции{% endblock %}
+{% block content %}
+    {% verbatim %}
+    <main class="container-xxl shadow-lg bg-white rounded p-3 mt-3 mb-3" id="promotions">
+        <h2 class="">Акции</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col-lg-4 col-md-6 col-sm-12" v-for="(item, id) in promotions" :id="id">
+                <div class="card h-100 m-0 shadow-lg bg-white rounded border rounded">
+                    <img :src="item.img" class="card-img-top" :alt="'Изображении акции: ' + item.title">
+                    <div class="card-body">
+                        <h4 class="card-title font-weight-bold">{{ item.title }}</h4>
+                        <p class="card-text">{{ item.description }}</p>
+                    </div>
+                    <div class="p-3">
+                        <button type="button" class="btn btn-info" @click="modal(item.product.id)"
+                                v-if="item.product"
+                                data-bs-toggle="modal" data-bs-target="#promotionModal">
+                            Посмотреть
+                        </button>
+                        <div v-if="item.coupon">
+                            <button type="button" class="btn btn-info"
+                                    @click="basket.coupon(item.coupon.code)" v-if="!basket.status">
+                                Активировать промокод
+                            </button>
+                            <button type="submit" disabled class="btn" v-if="basket.status" :class="basket.buttom()">
+                                {{ basket.status }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="promotionModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">{{ modalObject.name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-0">
+                        <div class="card">
+                            <img :src="modalObject.image" class="ml-3 mt-3 mr-3" :alt="'Продукт: ' + modalObject.name">
+                            <div class="card-body">
+                                <h4 class="card-title text-warning font-weight-bold">{{ modalObject.name }}</h4>
+                                <p class="card-text text-warning">{{ modalObject.description }}</p>
+                                <form @submit.prevent="prod.post(modalObject.slug, $event, modalObject.id)">
+                                    <div class="d-flex justify-content-between mb-3" v-if="category === 'Пицца'">
+                                        <input type="radio" class="btn-check" :id="modalObject.id + ''  + 25"
+                                               name="size"
+                                               value="25"
+                                               :checked="prod.newPrice[modalObject.id] === modalObject.price">
+                                        <label class="btn btn-outline-info p-0 mr-0" :for="modalObject.id + '' +  25"
+                                               style="width: 33%"
+                                               v-on:click="prod.newPrice.splice(modalObject.id, 1, modalObject.price)">25</label>
+                                        <input type="radio" class="btn-check" :id="modalObject.id + ''  + 30"
+                                               name="size"
+                                               value="30">
+                                        <label class="btn btn-outline-info p-0 mr-0" :for="modalObject.id + ''  + 30"
+                                               style="width: 33%"
+                                               v-on:click="prod.newPrice.splice(modalObject.id, 1, modalObject.price2)">30</label>
+                                        <input type="radio" class="btn-check" :id="modalObject.id + ''  + 35"
+                                               name="size"
+                                               value="35">
+                                        <label class="btn btn-outline-info p-0 mr-0" :for="modalObject.id + ''  + 35"
+                                               style="width: 33%"
+                                               v-on:click="prod.newPrice.splice(modalObject.id, 1, modalObject.price3)">35</label>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-3" v-if="category === 'Закуски'">
+                                        <input type="radio" class="btn-check" :id="modalObject.id + ''  + 25"
+                                               name="size"
+                                               value="Малая"
+                                               :checked="prod.newPrice[modalObject.id] === modalObject.price">
+                                        <label class="btn btn-outline-info p-0 mr-0" :for="modalObject.id + '' +  25"
+                                               style="width: 33%"
+                                               v-on:click="prod.newPrice.splice(modalObject.id, 1, modalObject.price)"
+                                        >Малая</label>
+                                        <input type="radio" class="btn-check" :id="modalObject.id + ''  + 30"
+                                               name="size"
+                                               value="Средняя">
+                                        <label class="btn btn-outline-info p-0 mr-0" :for="modalObject.id + ''  + 30"
+                                               style="width: 33%"
+                                               v-on:click="prod.newPrice.splice(modalObject.id, 1, modalObject.price2)"
+                                        >Средняя</label>
+                                        <input type="radio" class="btn-check" :id="modalObject.id + ''  + 35"
+                                               name="size"
+                                               value="Большая">
+                                        <label class="btn btn-outline-info p-0 mr-0" :for="modalObject.id + ''  + 35"
+                                               style="width: 33%"
+                                               v-on:click="prod.newPrice.splice(modalObject.id, 1, modalObject.price3)"
+                                        >Большая</label>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-3"
+                                         v-if="category === 'Напитки'">
+                                        <input type="radio" class="btn-check" :id="modalObject.id + ''  + 25"
+                                               name="size"
+                                               value="0.33 л."
+                                               :checked="prod.newPrice[modalObject.id] === modalObject.price">
+                                        <label class="btn btn-outline-info p-0 mr-0" :for="modalObject.id + '' +  25"
+                                               style="width: 33%"
+                                               v-on:click="prod.newPrice.splice(modalObject.id, 1, modalObject.price)"
+                                        >0.33 л.</label>
+                                        <input type="radio" class="btn-check" :id="modalObject.id + ''  + 30"
+                                               name="size"
+                                               value="0.5 л.">
+                                        <label class="btn btn-outline-info p-0 mr-0" :for="modalObject.id + ''  + 30"
+                                               style="width: 33%"
+                                               v-on:click="prod.newPrice.splice(modalObject.id, 1, modalObject.price2)"
+                                        >0.5 л.</label>
+                                        <input type="radio" class="btn-check" :id="modalObject.id + ''  + 35"
+                                               name="size"
+                                               value="1.0 л.">
+                                        <label class="btn btn-outline-info p-0 mr-0" :for="modalObject.id + ''  + 35"
+                                               style="width: 33%"
+                                               v-on:click="prod.newPrice.splice(modalObject.id, 1, modalObject.price3)"
+                                        >1.0 л.</label>
+                                    </div>
+                                    <button type="submit" class="btn btn-info">Выбрать</button>
+                                    <span class="text-danger">{{ prod.newPrice[modalObject.id] }}руб.</span>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    {% endverbatim %}
+{% endblock %}

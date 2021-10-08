@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load static %}
+{% load socialaccount %}
+{% block title %}Авторизация{% endblock %}
+{% block content %}
+    <main class="container-fluid">
+        <div class="row justify-content-sm-center">
+            <form method="post" class="col-md-8 col-lg-7 col-xl-5 mt-3 shadow-lg p-3 mb-5 bg-white rounded">
+                {% csrf_token %}
+                <h2>Авторизация</h2>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <button class="close" type="button" data-dismiss="alert" aria-label="close">×</button>
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+                {% endif %}
+
+
+                {% bootstrap_form form layout='vertical' %}
+{#                <div class="form-group">#}
+{#                    <div class="g-recaptcha" aria-required="false"#}
+{#                         data-sitekey="6Le0OZUaAAAAADXVeLwGl4sUytvh5xd72Y_GDLf-"></div>#}
+{#                </div>#}
+
+                <input type="hidden" name="next" value="{{ next }}">
+                {% buttons submit='Авторизация' %}
+                    <a href="{% url 'register' %}" class="text-blue">Нет аккаунта?</a>
+                {% endbuttons %}
+                <hr class="mt-1 mb-3">
+                <div class="d-flex justify-content-around">
+                    <a class="alert-link" href="{% provider_login_url 'yandex' %}"><img
+                            src="{% static 'img/yandex.png' %}" alt="Yandex" class="soc_auth"></a>
+                    <a class="alert-link" href="{% provider_login_url 'google' %}"><img
+                            src="{% static 'img/google.png' %}" alt="Google" class="soc_auth"></a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+{% endblock %}

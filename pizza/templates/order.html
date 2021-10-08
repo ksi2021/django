@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Оформление заказа{% endblock %}
+{% block content %}
+    <main class="container-fluid mb-5">
+        <div class="row justify-content-center">
+            {% if order.status != 'new' %}
+                <div class="col-sm-12 col-md-8 col-lg-6 col-xl-4">
+                    <form method="post" class="mt-3 shadow-lg p-3 bg-white rounded"
+                          autocomplete="off" id="main">
+                        {% csrf_token %}
+                        {% verbatim %}
+                        <div>
+                            <div class="alert alert-danger alert-dismissible" role="alert" id="err" v-if="seen">
+                                <button class="close" type="button" data-dismiss="alert" aria-label="close"
+                                        @click="seen=false">
+                                    ×
+                                </button>
+                                {{ error }}
+                            </div>
+                            <h2 class="mb-3">Выбор доставки</h2>
+                            <div id="street">
+                                <div class="form-group">
+                                    <label for="tel" class="form-label">
+                                        Телефон
+                                    </label>
+                                    <input type="text" name="tel"
+                                           class="form-control"
+                                           placeholder="8-999-999-99-99"
+                                           id="tel"
+                                           pattern="[0-9]{1}-[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}"
+                                           v-model="phone"
+                                           v-if="phone"
+                                           required>
+                                    <input type="text" name="tel"
+                                           class="form-control"
+                                           placeholder="8-999-999-99-99"
+                                           id="tel"
+                                           pattern="[0-9]{1}-[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}"
+                                           v-else
+                                           required>
+                                </div>
+                                <div v-if="seen">
+                                    <label for="address" class="form-label">
+                                        Адрес
+                                    </label>
+                                    <div class="form-group input-group mb-3">
+                                        <input type="text" id="address" v-model="search" :value="search"
+                                               @change="changeS"
+                                               class="form-control"
+                                               name="address"
+                                               aria-describedby="basic-addon2"
+                                               placeholder="Ул. Пушкина, дом 110"
+                                               autocomplete="new_address"
+                                               required>
+                                        <div type="button" class="input-group-text btn shadow--hover"
+                                             id="basic-addon2"
+                                             @click="searchStreet()">Найти
+                                        </div>
+
+                                        <ul class="list-group w-100">
+                                            <a class="list-group-item list-group-item btn btn-white border"
+                                               v-for="st in streets"
+                                               :id="st.display_name"
+                                               :key="st.id"
+                                               @click="choiceStreet(st.display_name, st.lat, st.lon)"
+                                               :class="{ 'text-danger': st.display_name === 'Ничего не найдено.' }">
+                                                {{st.display_name}}
+                                            </a>
+                                        </ul>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between">
+                                        <div class="form-group" style="width:30%">
+                                            <label for="entrance" class="form-label">
+                                                Подъезд
+                                            </label>
+                                            <input type="number" name="entrance"
+                                                   class="form-control"
+                                                   id="entrance">
+                                        </div>
+                                        <div class="form-group" style="width:30%">
+                                            <label for="floor_number" class="form-label">
+                                                Этаж
+                                            </label>
+                                            <input type="number" name="floor_number"
+                                                   class="form-control"
+                                                   id="floor_number">
+                                        </div>
+                                        <div class="form-group" style="width:30%">
+                                            <label for="apartment_number" class="form-label">
+                                                Квартира
+                                            </label>
+                                            <input type="number" name="apartment_number"
+                                                   class="form-control"
+                                                   id="apartment_number">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea1" class="form-label">Комментарий</label>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="4"
+                                          name="comment"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group" id="payment">
+                            <button type="submit" class="btn btn-primary" :disabled="choice">
+                                Перейти к оплате
+                            </button>
+                            <select class="form-select w-auto d-inline align-middle" name="buying_type" v-model="select"
+                                    required>
+                                <option value="" disabled>Тип доставки</option>
+                                <option value="delivery" selected >Доставка</option>
+                                <option value="self">Самовывоз</option>
+                            </select>
+                        </div>
+                        {% endverbatim %}
+                    </form>
+                </div>
+
+                {% verbatim %}
+                <aside class="mt-3 col-sm-12 col-md-8 col-lg-6 col-xl-4" id="basket">
+                    <table class="table table-white shadow-lg rounded-3">
+                        <thead>
+                        <tr>
+                            <th scope="col">Наименование</th>
+                            <th scope="col">Кол-во</th>
+                            <th scope="col">Цена</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="item in cart.products">
+                            <td>{{ item.product.name }}({{ item.size }})</td>
+                            <td>{{ item.qty }}</td>
+                            <td>{{ item.final_price }}руб.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </aside>
+                {% endverbatim %}
+            {% else %}
+                <aside class="col-sm-8 col-md-6 col-lg-4">
+                    <form id="payment-form" class="bg-white shadow-lg rounded-3 p-3 mt-5" name="order"
+                          method="post">
+                        <div id="card-element">
+
+                        </div>
+
+                        <div id="card-error" role="alert"></div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" id="card-button" class="btn btn-primary p-1 mt-2 mr-0"
+                                    data-username="{{ request.user }}"
+                                    data-secret="{{ client_secret }}">
+                                Оплатить: {{ cart.final_price }}руб.
+                            </button>
+                            <button class="btn btn-warning p-1" id="delOrder" type="button">Назад к оформлению</button>
+                        </div>
+                    </form>
+                </aside>
+            {% endif %}
+        </div>
+
+    </main>
+    <script>
+        let form = document.getElementById('payment-form');
+        const stripe = Stripe('pk_test_51IgOVCHac5lTiSCzXjX8cv5ZO6c09nWXJPW1e21aluE9yVe9gC6majkXIeMqIjCQmQHiidxeUGnpeMEIIl0zoxUA00lgPF48fC');
+        const elements = stripe.elements();
+        const style = {
+            base: {
+                color: "#32325d",
+            }
+        };
+
+        const card = elements.create("card", {style: style});
+        card.mount("#card-element");
+        card.on('change', function (event) {
+            const displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+        form.addEventListener('submit', function (ev) {
+            ev.preventDefault();
+            const clientSecret = document.getElementById('card-button');
+            stripe.confirmCardPayment(clientSecret.dataset.secret, {
+                payment_method: {
+                    card: card,
+                    billing_details: {
+                        name: document.getElementById('card-button').dataset.username
+                    }
+                }
+            }).then(function (result) {
+                if (result.error) {
+                    console.log(result.error.message);
+                } else {
+                    if (result.paymentIntent.status === 'succeeded') {
+                        function getCookie(name) {
+                            let cookieValue = null;
+                            if (document.cookie && document.cookie !== '') {
+                                const cookies = document.cookie.split(';');
+                                for (let i = 0; i < cookies.length; i++) {
+                                    const cookie = cookies[i].trim();
+                                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                        break;
+                                    }
+                                }
+                            }
+                            return cookieValue;
+                        }
+
+                        const csrftoken = getCookie('csrftoken');
+                        const formData = new FormData(document.forms.order);
+
+                        formData.append("first_name", document.getElementById('card-button').dataset.username);
+                        formData.append("csrfmiddlewaretoken", csrftoken)
+                        const xhr = new XMLHttpRequest();
+                        xhr.open("POST", "/payed-online-order/");
+                        xhr.send(formData);
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4) {
+                                const chatSocket = new WebSocket('ws://localhost:8000/order/');
+                                window.location.replace("http://127.0.0.1:8000");
+                                alert('Ваш заказ успешно оплачен! Менеджер с Вами свяжется');
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+
+    </script>
+{% endblock %}

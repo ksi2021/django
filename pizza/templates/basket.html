@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Корзина{% endblock %}
+{% block content %}
+    <main class="container-xxl shadow-lg bg-white rounded mt-3 mb-3">
+        <h2 class="mt-4 pl-3 pr-3">Корзина</h2>
+        {% verbatim %}
+        <div id="basket">
+            <h4 class="mt-4 pl-3 pr-3" v-if="Object.keys(cart.products).length === 0">Добавьте что-нибудь из меню</h4>
+            <div class="border-top border-bottom" v-for="(item, i) in cart.products">
+                <div class="row g-0 p-3">
+                    <div class="col-md-2 align-self-center">
+                        <img :src="item.product.image" width="80%" class="m-auto"
+                             :alt="'Изображение товара: ' + item.product.name">
+                    </div>
+                    <div class="card-body col-md-6 pr-0 pl-0">
+                        <div class=" p-0 d-inline-block" style="">
+                            <h3 class="card-title">{{ item.product.name }}</h3>
+                            <p class="card-text">{{ item.product.description }}</p>
+                            <p class="card-text" v-if="item.size">
+                                <small class="text-muted">Размер: {{ item.size }}</small>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="align-self-center col-md-4">
+                        <div class="d-flex justify-content-between">
+                            <div class="input-group w-auto">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-outline-info btn-sm rounded-0" type="button"
+                                            @click="changeQTY(item.product.slug, item.size, item.qty, -1)"
+                                            :disabled="item.qty === 1" :id="'minus' + i">-</button>
+                                </span>
+                                <div class="align-self-center border border-info ml-2 mr-2">
+                                    <span class="input-group-btn pl-2 pr-2">
+                                    {{ item.qty }}
+                                    </span>
+                                </div>
+
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-outline-info btn-sm rounded-0" type="button"
+                                            @click="changeQTY(item.product.slug, item.size, item.qty, 1)"
+                                            :id="'plus' + i">+</button>
+                                </span>
+                            </div>
+                            <div>
+                                <span>
+                                    {{ item.final_price }}
+                                </span>
+                            </div>
+                            <div>
+                                <span>
+                                    <button type="button" class="btn-close" aria-label="Close"
+                                            @click="deleteProduct(item.product.slug, item.size, item.final_price)"
+                                            :id="'delProd' + i"></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form @submit.prevent="coupon(code)" method="post" class="col-7 col-lg-3 mb-4 mt-3" v-if="!cart.coupon">
+                <span class="text-danger">{{ status }}</span>
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Промокод"
+                           aria-describedby="button-addon"
+                           name="code" v-model="code">
+                    <button class="btn btn-info" type="submit" id="button-addon">Применить</button>
+                </div>
+            </form>
+            <div class="m-3 d-flex" v-else>
+                <h5 class="align-self-center m-0 mr-2">Промокод <b>{{ cart.coupon.code }}({{ cart.coupon.sale }}%)</b>
+                    активирован</h5>
+                <button type="button" class="btn-close align-self-center" aria-label="Close"
+                        @click="delCoupon()" id="delCoupon"></button>
+            </div>
+            <div class="d-flex ml-3 mr-3 mb-5">
+                <div>
+                    <a href="/basket/order" id="order" class="btn btn-outline-info" v-if="Object.keys(cart.products).length">Оформить
+                        заказ</a>
+                    <a href="/" class="btn btn-outline-info" v-else>Вернуться на главную</a>
+                    <a href="/delete-cart/" class="ml-5 text-info font-weight-700" style="text-decoration: underline"
+                       v-if="Object.keys(cart.products).length" id="delCart">
+                        Удалить корзину
+                    </a>
+                </div>
+                <div class="ms-auto align-self-center">
+                    <span class="font-weight-900 text-warning">Итого: {{ cart.final_price }}руб.</span>
+                </div>
+            </div>
+        </div>
+        {% endverbatim %}
+
+
+    </main>
+
+
+{% endblock %}

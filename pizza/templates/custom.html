@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load static %}
+{% block title %}Пицца Кастомс{% endblock %}
+{% block content %}
+    {% verbatim %}
+    <main class="container-xxl mt-3 shadow-lg p-3 mb-5 bg-white rounded">
+        <form class="row" method="POST" id="custom">
+            <h2 class="ml-1 mb-4 mt-2">Пицца Кастомс</h2>
+            <div class="col d-flex justify-content-center">
+                <div class="card border-0">
+                    <div class="d-flex justify-content-center align-middle">
+                        <img src="/static/img/product/custom.png" :style="sizeImg()" class="customPizza"
+                             alt="Кастомная пицца">
+                    </div>
+                    <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
+                        <div class="card-body border border-4 pb-1">
+                            <b class="">
+                                Ваша пицца содержит:
+                            </b>
+                            <div class="d-flex justify-content-between mt-3" v-for="i in final_cost">
+                                <div class="w-50">
+                                    {{ i.prod }}
+                                </div>
+                                <div class="input-group w-25 justify-content-around">
+
+                                    <button class="btn btn-sm rounded-0" type="button"
+                                            @click="changeQty(i, 1)"
+                                            :class="{'btn-warning': i.qty === 1, 'btn-outline-warning': i.qty === 2}">X1
+                                    </button>
+                                    <button class="btn btn-sm rounded-0" type="button"
+                                            @click="changeQty(i, 2)"
+                                            :class="{'btn-warning': i.qty === 2, 'btn-outline-warning': i.qty === 1}">X2
+                                    </button>
+                                </div>
+                                <div class="d-flex justify-content-end w-25">
+                                    {{ i.cost * i.qty }}руб.
+                                    <button type="button" class="btn btn-close p-1" @click="removeProd(i)"></button>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-4">
+                                <div>
+                                    <button type="button" class="btn btn-info" @click="post()">
+                                        Выбрать
+                                    </button>
+                                </div>
+                                <div>
+                            <span class="text-end">
+                                <h6 class="fw-bold">Итог:</h6>
+                                <h6 class="fw-bold">{{ price() }}руб.</h6>
+                            </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex justify-content-end mb-3">
+                    <input type="radio" class="btn-check" name="dough" id="option1" autocomplete="off" checked
+                           value="Тонкое тесто">
+                    <label class="btn btn-outline-info w-50" for="option1" @click="doughChoice(0)">Тонкое тесто</label>
+                    <input type="radio" class="btn-check" name="dough" id="option2" autocomplete="off"
+                           value="Традиционное тесто">
+                    <label class="btn btn-outline-info w-50" for="option2" @click="doughChoice(1)">Традиционное
+                        тесто</label>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <input type="radio" class="btn-check" name="size" id="option1.1" autocomplete="off" value="25"
+                           checked>
+                    <label class="btn btn-outline-info w-25 pt-1 pb-1" for="option1.1" @click="sizeChoice(0)">25
+                        см</label>
+                    <input type="radio" class="btn-check" name="size" id="option2.1" autocomplete="off" value="30">
+                    <label class="btn btn-outline-info w-25 pt-1 pb-1" for="option2.1" @click="sizeChoice(1)">30
+                        см</label>
+                    <input type="radio" class="btn-check" name="size" id="option3.1" autocomplete="off" value="35">
+                    <label class="btn btn-outline-info w-25 pt-1 pb-1" for="option3.1" @click="sizeChoice(2)">35
+                        см</label>
+                </div>
+                <div class="d-flex justify-content-end mt-2">
+                    <ul class="list-group list-group-horizontal">
+                        <button type="button" class="btn list-group-item m-0 p-2" @click="filter = 'meat'"
+                                :class="{ 'active': filter === 'meat' }" :id="filter">Мясо
+                        </button>
+                        <button type="button" class="btn list-group-item m-0 p-2" @click="filter = 'cheese'"
+                                :class="{ 'active': filter === 'cheese' }" :id="filter">Сыр
+                        </button>
+                        <button type="button" class="btn list-group-item m-0 p-2" @click="filter = 'vegetable'"
+                                :class="{ 'active': filter === 'vegetable' }" :id="filter">Овощи
+                        </button>
+                    </ul>
+                </div>
+                <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
+                    <div class="col-sm col-md-3" v-for="(prod, i) in ingredientsList()">
+                        <div class="card p-2 prod" :id="prod.prod">
+                            <div class="filter">
+                                <img class="card-img-top" style="height: 80px" :src="prod.img"
+                                     :alt="'Ингредиент: ' + prod.prod">
+                                <div class="card-body p-0">
+                                    <p class="card-text">{{ prod.prod }}</p>
+                                </div>
+                            </div>
+                            <div @click="addProd(prod, prod.price, i)"
+                                 :class="prod.style"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+    {% endverbatim %}
+
+
+{% endblock %}

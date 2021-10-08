@@ -1,0 +1,208 @@
+/*!*span*!*/
+/*!*{*!*/
+/*!*    color: #2a8c98;*!*/
+/*!*    font-size: 24px;*!*/
+/*!*    font-weight: bold;*!*/
+/*!*}*!*/
+
+.btn-danger:hover {
+    background-color: #de2e50;
+}
+.nav:nth-child(1) {
+
+    height: 146px;
+}
+
+.nav-item > .nav-link {
+    color: black;
+}
+
+.nav-item > .btn-info {
+    color: white;
+}
+
+
+.img-block {
+    position: relative;
+    overflow: hidden;
+    height: 360px;
+}
+
+.img-block .img-responsive {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: inherit;
+    object-fit: cover;
+}
+
+input:active, input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: solid #cad1d7 !important;
+}
+
+::-webkit-scrollbar-button {
+    background-image: url('');
+    background-repeat: no-repeat;
+    width: 6px;
+    height: 0px
+}
+
+::-webkit-scrollbar-track {
+    background-color: #dbdbdb;
+    box-shadow: 0px 0px 3px #d4d4d4 inset;
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    background-color: #aca8a8;
+    box-shadow: 0px 1px 1px #aca8a8 inset;
+    background-image: url('https://yraaa.ru/_pu/24/59610063.png');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+::-webkit-resizer {
+    background-image: url('');
+    background-repeat: no-repeat;
+    width: 7px;
+    height: 0px
+}
+
+::-webkit-scrollbar {
+    width: 11px;
+}
+
+.soc_auth {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    transition: .5s;
+}
+
+.soc_auth:hover {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.75) !important;
+    border-radius: 100%;
+    transition: .5s;
+}
+
+.customPizza {
+    transition: .5s;
+}
+
+.prod:hover {
+    background-color: #ced4da
+}
+
+.prod:hover .filter {
+    transition: .5s;
+    filter: blur(.8px)
+}
+
+.prod:hover .prodPlus {
+    transition: .5s;
+    cursor: pointer;
+    display: block;
+    background-color: #2dce89;
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    margin-left: -30px;
+    border-radius: 50%;
+}
+
+.prod:hover .prodPlus::before {
+    transition: .5s;
+    width: 4px;
+    height: 16px;
+    margin-top: -8px;
+    margin-left: -2px;
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: #fff;
+}
+
+.prod:hover .prodPlus::after {
+    transition: .5s;
+    width: 16px;
+    height: 4px;
+    margin-top: -2px;
+    margin-left: -8px;
+}
+
+.prodPlus:before, .prodPlus:after {
+    transition: .5s;
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: #fff;
+}
+
+
+.prod:hover .prodDel {
+    transition: .5s;
+    transform: rotate(45deg);
+    cursor: pointer;
+    display: block;
+    background-color: #f5365c;
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    margin-left: -30px;
+    border-radius: 50%;
+}
+
+.prod:hover .prodDel::before {
+    transition: .5s;
+    width: 4px;
+    height: 16px;
+    margin-top: -8px;
+    margin-left: -2px;
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: #fff;
+}
+
+.prod:hover .prodDel::after {
+    transition: .5s;
+    width: 16px;
+    height: 4px;
+    margin-top: -2px;
+    margin-left: -8px;
+}
+
+.prodPlus:before, .prodDel:after {
+    transition: .5s;
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: #fff;
+}
+
+/*.back*/
+/*{*/
+/*    background: linear-gradient(49deg, #2c6c75, #28aec0);*/
+/*}*/
+
+/*.labels*/
+/*{*/
+/*    color: #c8d4d5;*/
+/*}*/
+
+/*.input*/
+/*{*/
+/*    background: #c8d4d5 !important;*/
+/*}*/
